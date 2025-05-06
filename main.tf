@@ -18,12 +18,17 @@ resource "google_service_account" "compute-engine-sa" {
   display_name = "Service Account for Compute Engine"
 }
 
-resource "google_project_iam_binding" "compute_engine_sa_binding" {
+
+# Assign IAM roles to the service account
+# Thanks to intotech for this idea https://stackoverflow.com/a/71521532
+resource "google_project_iam_member" "compute_engine_sa_binding" {
+  for_each = toset([
+    "roles/compute.imageUser",
+    "roles/compute.osAdminLogin"
+  ])
   project = var.project_id
-  role    = "roles/compute.imageUser, roles/compute.osAdminLogin"
-  members = [
-    "serviceAccount:${google_service_account.compute-engine-sa.email}",
-  ]
+  role    = each.key
+  member = "serviceAccount:${google_service_account.compute-engine-sa.email}"
 }
 
 module "compute" {
