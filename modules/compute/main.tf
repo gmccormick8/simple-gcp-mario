@@ -23,8 +23,6 @@ resource "google_compute_instance" "instances" {
   zone         = each.value.zone
   project      = var.project_id
 
-  hostname = "${each.value.name}@example.com"
-
   boot_disk {
     initialize_params {
       image = each.value.boot_disk.image

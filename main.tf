@@ -10,6 +10,19 @@ module "network" {
       cidr   = "10.0.0.0/24"
     }
   }
+
+  firewall_rules = {
+    "allow-inbound-iap-ssh-access" = {
+      direction     = "INGRESS"
+      source_ranges = ["35.235.240.0/20"]
+      target_tags   = ["demo"]
+      allow = [{
+        protocol = "tcp"
+        ports    = ["22"]
+      }]
+    }
+  }
+
   cloud_nat_configs = ["us-central1"]
 }
 
@@ -28,7 +41,7 @@ resource "google_project_iam_member" "compute_engine_sa_binding" {
   ])
   project = var.project_id
   role    = each.key
-  member = "serviceAccount:${google_service_account.compute-engine-sa.email}"
+  member  = "serviceAccount:${google_service_account.compute-engine-sa.email}"
 }
 
 module "compute" {
