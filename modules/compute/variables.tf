@@ -6,14 +6,14 @@ variable "project_id" {
 variable "instances" {
   description = "Map of instance configurations"
   type = map(object({
-    name_prefix     = string
-    machine_type    = string
-    zone            = string
-    instance_count  = optional(number, 1)
+    name_prefix    = string
+    machine_type   = string
+    zone           = string
+    instance_count = optional(number, 1)
     boot_disk = object({
-      image  = string
-      type   = optional(string, "pd-standard")
-      size   = optional(number, 50)
+      image = string
+      type  = optional(string, "pd-standard")
+      size  = optional(number, 50)
     })
     network_interface = object({
       subnetwork = string

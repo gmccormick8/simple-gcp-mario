@@ -2,14 +2,14 @@ locals {
   instances_flat = flatten([
     for k, v in var.instances : [
       for i in range(v.instance_count) : {
-        key           = k
-        name         = "${v.name_prefix}-${i + 1}"
-        machine_type = v.machine_type
-        zone         = v.zone
-        boot_disk    = v.boot_disk
+        key               = k
+        name              = "${v.name_prefix}-${i + 1}"
+        machine_type      = v.machine_type
+        zone              = v.zone
+        boot_disk         = v.boot_disk
         network_interface = v.network_interface
-        service_account  = v.service_account
-        tags            = v.tags
+        service_account   = v.service_account
+        tags              = v.tags
       }
     ]
   ])

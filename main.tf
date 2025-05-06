@@ -13,8 +13,8 @@ module "network" {
   cloud_nat_configs = ["us-central1"]
 }
 
-resource "google_service_account" "compute_engine_sa" {
-  account_id   = "compute_engine_sa"
+resource "google_service_account" "compute-engine-sa" {
+  account_id   = "compute-engine-sa"
   display_name = "Service Account for Compute Engine"
 }
 
@@ -22,7 +22,7 @@ resource "google_project_iam_binding" "compute_engine_sa_binding" {
   project = var.project_id
   role    = "roles/compute.imageUser, roles/compute.osAdminLogin"
   members = [
-    "serviceAccount:${google_service_account.compute_engine_sa.email}",
+    "serviceAccount:${google_service_account.compute-engine-sa.email}",
   ]
 }
 
@@ -42,7 +42,7 @@ module "compute" {
         subnetwork = module.network.subnets["prod-central-vpc"].self_link
       }
       service_account = {
-        email  = google_service_account.compute_engine_sa.email
+        email  = google_service_account.compute-engine-sa.email
         scopes = ["cloud-platform"]
       }
       tags = ["demo"]

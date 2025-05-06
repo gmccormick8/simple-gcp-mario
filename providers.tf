@@ -6,7 +6,7 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 6.30.0"
     }
- }
+  }
 
   backend "local" {
     path = "./terraform.tfstate"
