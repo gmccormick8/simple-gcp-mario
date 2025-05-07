@@ -15,10 +15,19 @@ module "network" {
     "allow-inbound-iap-ssh-access" = {
       direction     = "INGRESS"
       source_ranges = ["35.235.240.0/20"]
-      target_tags   = ["demo"]
+      target_tags   = ["http-server"]
       allow = [{
         protocol = "tcp"
         ports    = ["22"]
+      }]
+    }
+    "allow-inbound-http-access" = {
+      direction     = "INGRESS"
+      source_ranges = ["0.0.0.0/0"]
+      target_tags   = ["lb-web"]
+      allow = [{
+        protocol = "tcp"
+        ports    = ["80"]
       }]
     }
   }
@@ -26,6 +35,7 @@ module "network" {
   cloud_nat_configs = ["us-central1"]
 }
 
+# Create a Service Account for Compute Engine
 resource "google_service_account" "compute-engine-sa" {
   account_id   = "compute-engine-sa"
   display_name = "Service Account for Compute Engine"
@@ -44,17 +54,20 @@ resource "google_project_iam_member" "compute_engine_sa_binding" {
   member  = "serviceAccount:${google_service_account.compute-engine-sa.email}"
 }
 
+# Create a Compute Engine Managed Instance Group
 module "compute" {
   source     = "./modules/compute"
   project_id = var.project_id
 
   instances = {
-    "demo" = {
-      name_prefix  = "demo"
-      machine_type = "e2-micro"
-      zone         = "us-central1-a"
+    "mario" = {
+      name_prefix   = "mario"
+      machine_type  = "e2-micro"
+      region        = "us-central1"
+      instance_type = "regional"
+      target_size   = 3
       boot_disk = {
-        image = "debian-cloud/debian-11"
+        image = "debian-cloud/debian-12"
       }
       network_interface = {
         subnetwork = module.network.subnets["prod-central-vpc"].self_link
@@ -63,7 +76,14 @@ module "compute" {
         email  = google_service_account.compute-engine-sa.email
         scopes = ["cloud-platform"]
       }
-      tags = ["demo"]
+      tags = ["http-server", "lb-web"] 
     }
   }
+}
+
+# Create a load balancer for the website
+module "load-balancer" {
+  source    = "./modules/load-balancer"
+  region    = "us-central1"
+  mig_group = module.compute.regional_instance_groups["mario"]
 }

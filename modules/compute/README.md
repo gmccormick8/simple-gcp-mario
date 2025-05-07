@@ -1,18 +1,19 @@
 # GCP Compute Engine Terraform Module
 
-This module manages Google Compute Engine instances.
+This module manages Google Compute Engine instance groups.
 
 ## Features
 
-- Creates multiple compute instances
-- Configurable machine types and boot disks
+- Creates managed instance groups (both zonal and regional)
+- Configurable instance templates
+- Supports auto-scaling configurations
 - Network interface configuration
 - Service account attachment
 - Instance tagging support
 
 ## Usage
 
-Basic usage:
+Basic usage with zonal instance group:
 
 ```hcl
 module "compute" {
@@ -24,6 +25,33 @@ module "compute" {
       name_prefix  = "app"
       machine_type = "e2-medium"
       zone         = "us-central1-a"
+      target_size  = 3
+      boot_disk = {
+        image = "debian-cloud/debian-11"
+      }
+      network_interface = {
+        subnetwork = "default"
+      }
+      tags = ["app", "web"]
+    }
+  }
+}
+```
+
+Regional instance group example:
+
+```hcl
+module "compute" {
+  source     = "./modules/compute"
+  project_id = "my-project"
+
+  instances = {
+    "app-regional" = {
+      name_prefix    = "app"
+      machine_type   = "e2-medium"
+      region         = "us-central1"
+      instance_type  = "regional"  # Specify regional deployment
+      target_size    = 6
       boot_disk = {
         image = "debian-cloud/debian-11"
       }
@@ -49,8 +77,10 @@ Each instance configuration supports the following attributes:
 
 - `name_prefix` - Prefix for the instance name
 - `machine_type` - The machine type
-- `zone` - The zone where the instance will be created
-- `instance_count` - Number of instances (default: 1)
+- `zone` - The zone for zonal instance groups
+- `region` - The region for regional instance groups
+- `instance_type` - Either "zonal" or "regional" (default: "zonal")
+- `target_size` - Number of instances to maintain (default: 1)
 - `boot_disk` - Boot disk configuration
 - `network_interface` - Network interface configuration
 - `service_account` - Service account configuration (optional)
@@ -58,7 +88,8 @@ Each instance configuration supports the following attributes:
 
 ## Outputs
 
-| Name         | Description                            |
-| ------------ | -------------------------------------- |
-| instances    | The created compute instances          |
-| instance_ips | Internal IP addresses of the instances |
+| Name                     | Description                          |
+| ------------------------ | ------------------------------------ |
+| instance_templates       | The created instance templates       |
+| zonal_instance_groups    | The created zonal instance groups    |
+| regional_instance_groups | The created regional instance groups |

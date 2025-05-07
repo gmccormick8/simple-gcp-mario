@@ -1,39 +1,21 @@
-locals {
-  instances_flat = flatten([
-    for k, v in var.instances : [
-      for i in range(v.instance_count) : {
-        key               = k
-        name              = "${v.name_prefix}-${i + 1}"
-        machine_type      = v.machine_type
-        zone              = v.zone
-        boot_disk         = v.boot_disk
-        network_interface = v.network_interface
-        service_account   = v.service_account
-        tags              = v.tags
-      }
-    ]
-  ])
-}
+# Create instance templates
+resource "google_compute_instance_template" "templates" {
+  for_each = var.instances
 
-resource "google_compute_instance" "instances" {
-  for_each = { for inst in local.instances_flat : inst.name => inst }
-
-  name         = each.value.name
+  name_prefix  = "${each.value.name_prefix}-template-"
   machine_type = each.value.machine_type
-  zone         = each.value.zone
   project      = var.project_id
 
-  boot_disk {
-    initialize_params {
-      image = each.value.boot_disk.image
-      type  = each.value.boot_disk.type
-      size  = each.value.boot_disk.size
-    }
+  disk {
+    source_image = each.value.boot_disk.image
+    disk_type    = each.value.boot_disk.type
+    disk_size_gb = each.value.boot_disk.size
+    boot         = true
+    auto_delete  = true
   }
 
   network_interface {
     subnetwork = each.value.network_interface.subnetwork
-    network_ip = each.value.network_interface.network_ip
   }
 
   dynamic "service_account" {
@@ -48,5 +30,56 @@ resource "google_compute_instance" "instances" {
 
   metadata = {
     enable-oslogin = "TRUE"
+    startup-script = <<-EOF
+      #! /bin/bash
+      apt-get update
+      apt-get install -y nginx
+      service nginx start
+    EOF
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Create zonal instance groups
+resource "google_compute_instance_group_manager" "zonal" {
+  for_each = {
+    for k, v in var.instances : k => v
+    if lookup(v, "instance_type", "zonal") == "zonal"
+  }
+
+  name               = "${each.value.name_prefix}-igm"
+  project            = var.project_id
+  base_instance_name = each.value.name_prefix
+  zone               = each.value.zone
+  target_size        = each.value.target_size
+
+  version {
+    instance_template = google_compute_instance_template.templates[each.key].id
+  }
+}
+
+# Create regional instance groups
+resource "google_compute_region_instance_group_manager" "regional" {
+  for_each = {
+    for k, v in var.instances : k => v
+    if lookup(v, "instance_type", "zonal") == "regional"
+  }
+
+  name               = "${each.value.name_prefix}-rigm"
+  project            = var.project_id
+  base_instance_name = each.value.name_prefix
+  region             = each.value.region
+  target_size        = each.value.target_size
+  distribution_policy_zones = [
+    "${each.value.region}-a",
+    "${each.value.region}-b",
+    "${each.value.region}-c",
+  ]
+
+  version {
+    instance_template = google_compute_instance_template.templates[each.key].id
   }
 }
