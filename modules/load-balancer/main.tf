@@ -16,6 +16,7 @@ resource "google_compute_region_backend_service" "backend" {
   backend {
     group          = var.mig_group
     balancing_mode = "UTILIZATION"
+    capacity_scaler = 1.0
   }
 }
 

@@ -29,8 +29,10 @@ resource "google_compute_instance_template" "template" {
     startup-script = <<-EOF
       #! /bin/bash
       apt-get update
-      apt-get install -y nginx
-      service nginx start
+      apt-get install -y apache2
+      apt-get install -y git
+      git clone https://github.com/anndcodes/mario-game.git /var/www/html/
+      service apache2 restart
     EOF
   }
 
@@ -51,6 +53,11 @@ resource "google_compute_region_instance_group_manager" "regional" {
     "${var.instance.region}-b",
     "${var.instance.region}-c",
   ]
+
+  named_port {
+    name = "http"
+    port = 80
+  }
 
   version {
     instance_template = google_compute_instance_template.template.id
