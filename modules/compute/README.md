@@ -1,95 +1,95 @@
 # GCP Compute Engine Terraform Module
 
-This module manages Google Compute Engine instance groups.
+This module manages Google Compute Engine regional managed instance groups with auto-configured health checks and instance templates.
 
 ## Features
 
-- Creates managed instance groups (both zonal and regional)
+- Creates regional managed instance groups
 - Configurable instance templates
-- Supports auto-scaling configurations
-- Network interface configuration
-- Service account attachment
-- Instance tagging support
+- Automatic distribution across 3 zones in a region
+- Built-in nginx web server installation
+- OS Login enabled by default
+- Configurable service account and network tags
 
 ## Usage
 
-Basic usage with zonal instance group:
+Basic usage example:
 
 ```hcl
 module "compute" {
   source     = "./modules/compute"
   project_id = "my-project"
 
-  instances = {
-    "app" = {
-      name_prefix  = "app"
-      machine_type = "e2-medium"
-      zone         = "us-central1-a"
-      target_size  = 3
-      boot_disk = {
-        image = "debian-cloud/debian-11"
-      }
-      network_interface = {
-        subnetwork = "default"
-      }
-      tags = ["app", "web"]
+  instance = {
+    name_prefix  = "web"
+    machine_type = "e2-micro"
+    region       = "us-central1"
+    target_size  = 3
+    boot_disk = {
+      image = "debian-cloud/debian-12"
     }
+    network_interface = {
+      subnetwork = "default"
+    }
+    service_account = {
+      email = "my-service-account@project.iam.gserviceaccount.com"
+    }
+    tags = ["http-server", "lb-web"]
   }
 }
 ```
 
-Regional instance group example:
+## Requirements
 
-```hcl
-module "compute" {
-  source     = "./modules/compute"
-  project_id = "my-project"
-
-  instances = {
-    "app-regional" = {
-      name_prefix    = "app"
-      machine_type   = "e2-medium"
-      region         = "us-central1"
-      instance_type  = "regional"  # Specify regional deployment
-      target_size    = 6
-      boot_disk = {
-        image = "debian-cloud/debian-11"
-      }
-      network_interface = {
-        subnetwork = "default"
-      }
-      tags = ["app", "web"]
-    }
-  }
-}
-```
+- Terraform >= 1.11.0
+- Google Provider >= 6.30.0
+- Google Project with necessary APIs enabled
+  - compute.googleapis.com
 
 ## Inputs
 
-| Name       | Description                    | Type        | Required |
-| ---------- | ------------------------------ | ----------- | -------- |
-| project_id | The GCP project ID            | string      | yes      |
-| instances  | Map of instance configurations | map(object) | yes      |
+| Name       | Description            | Type   | Required | Default |
+| ---------- | ---------------------- | ------ | -------- | ------- |
+| project_id | The GCP project ID     | string | yes      | -       |
+| instance   | Instance configuration | object | yes      | -       |
 
 ### Instance Configuration
 
-Each instance configuration supports the following attributes:
+The `instance` variable supports the following attributes:
 
-- `name_prefix` - Prefix for the instance name
-- `machine_type` - The machine type
-- `zone` - The zone for zonal instance groups
-- `region` - The region for regional instance groups
-- `instance_type` - Either "zonal" or "regional" (default: "zonal")
-- `target_size` - Number of instances to maintain (default: 1)
-- `boot_disk` - Boot disk configuration
-- `network_interface` - Network interface configuration
-- `service_account` - Service account configuration (optional)
-- `tags` - List of network tags (optional)
+```hcl
+instance = {
+  name_prefix   = string               # Required: Prefix for instance names
+  machine_type  = string               # Required: Machine type (e.g., "e2-micro")
+  region        = string               # Required: Region for deployment
+  target_size   = number               # Optional: Number of instances (default: 1)
+  boot_disk = {
+    image       = string               # Required: Boot disk image
+    type        = string               # Optional: Disk type (default: "pd-standard")
+    size        = number               # Optional: Disk size in GB (default: 50)
+  }
+  network_interface = {
+    subnetwork  = string               # Required: Subnetwork self_link or name
+    network_ip  = string               # Optional: Static internal IP
+  }
+  service_account = {                  # Optional: Service account configuration
+    email       = string               # Optional: Service account email
+    scopes      = list(string)         # Optional: Access scopes (default: ["cloud-platform"])
+  }
+  tags           = list(string)        # Optional: Network tags (default: [])
+}
+```
 
 ## Outputs
 
-| Name                    | Description                            |
-| ---------------------- | -------------------------------------- |
-| instance_templates     | The created instance templates         |
-| zonal_instance_groups  | The created zonal instance groups      |
-| regional_instance_groups| The created regional instance groups   |
+| Name              | Description                                          |
+| ----------------- | ---------------------------------------------------- |
+| instance_template | The created instance template resource               |
+| instance_group    | The created regional instance group manager resource |
+
+## Notes
+
+- Instances are automatically distributed across three zones in the specified region
+- Each instance runs nginx web server (installed via startup script)
+- OS Login is enabled by default
+- The module creates instance templates with a unique name prefix to support updates

@@ -14,7 +14,7 @@ resource "google_compute_region_backend_service" "backend" {
   timeout_sec           = 10
   health_checks         = [google_compute_region_health_check.default.id]
   backend {
-    group          = var.mig_group.instance_group
+    group          = var.mig_group
     balancing_mode = "UTILIZATION"
   }
 }

@@ -24,7 +24,7 @@ module "network" {
     "allow-inbound-http-access" = {
       direction     = "INGRESS"
       source_ranges = ["0.0.0.0/0"]
-      target_tags   = ["lb-web"]
+      target_tags   = ["http-server"]
       allow = [{
         protocol = "tcp"
         ports    = ["80"]
@@ -59,25 +59,22 @@ module "compute" {
   source     = "./modules/compute"
   project_id = var.project_id
 
-  instances = {
-    "mario" = {
-      name_prefix   = "mario"
-      machine_type  = "e2-micro"
-      region        = "us-central1"
-      instance_type = "regional"
-      target_size   = 3
-      boot_disk = {
-        image = "debian-cloud/debian-12"
-      }
-      network_interface = {
-        subnetwork = module.network.subnets["prod-central-vpc"].self_link
-      }
-      service_account = {
-        email  = google_service_account.compute-engine-sa.email
-        scopes = ["cloud-platform"]
-      }
-      tags = ["http-server", "lb-web"]
+  instance = {
+    name_prefix  = "mario"
+    machine_type = "e2-micro"
+    region       = "us-central1"
+    target_size  = 3
+    boot_disk = {
+      image = "debian-cloud/debian-12"
     }
+    network_interface = {
+      subnetwork = module.network.subnets["prod-central-vpc"].self_link
+    }
+    service_account = {
+      email  = "${google_service_account.compute-engine-sa.email}"
+      scopes = ["cloud-platform"]
+    }
+    tags = ["http-server"]
   }
 }
 
@@ -85,5 +82,5 @@ module "compute" {
 module "load-balancer" {
   source    = "./modules/load-balancer"
   region    = "us-central1"
-  mig_group = module.compute.regional_instance_groups["mario"]
+  mig_group = module.compute.instance_group
 }

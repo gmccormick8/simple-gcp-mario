@@ -3,15 +3,13 @@ variable "project_id" {
   type        = string
 }
 
-variable "instances" {
-  description = "Map of instance configurations"
-  type = map(object({
-    name_prefix   = string
-    machine_type  = string
-    zone          = optional(string)
-    region        = optional(string)
-    target_size   = optional(number, 1)
-    instance_type = optional(string, "zonal") # can be "zonal" or "regional"
+variable "instance" {
+  description = "Instance configuration options"
+  type = object({
+    name_prefix  = string
+    machine_type = string
+    region       = string
+    target_size  = optional(number, 1)
     boot_disk = object({
       image = string
       type  = optional(string, "pd-standard")
@@ -26,5 +24,5 @@ variable "instances" {
       scopes = optional(list(string), ["cloud-platform"])
     }))
     tags = optional(list(string), [])
-  }))
+  })
 }
