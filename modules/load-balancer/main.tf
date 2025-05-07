@@ -52,6 +52,6 @@ resource "google_compute_global_forwarding_rule" "forwarding-rule" {
   ip_protocol           = "TCP"
   port_range            = "80"
   load_balancing_scheme = "EXTERNAL_MANAGED"
-  target                = google_compute_region_target_http_proxy.http-proxy.id
+  target                = google_compute_target_http_proxy.http-proxy.id
   ip_address            = google_compute_global_address.lb-ip.id
 }
