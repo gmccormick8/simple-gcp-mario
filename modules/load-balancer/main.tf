@@ -1,6 +1,6 @@
 #Reserve a static IP address for the load balancer
 resource "google_compute_global_address" "lb-ip" {
-  name        = "lb-ip"
+  name         = "lb-ip"
   address_type = "EXTERNAL"
 }
 
@@ -9,7 +9,7 @@ resource "google_compute_region_backend_service" "backend" {
   name                  = "website-backend"
   region                = var.region
   protocol              = "HTTP"
-  port_name            = "http"
+  port_name             = "http"
   load_balancing_scheme = "EXTERNAL_MANAGED"
   timeout_sec           = 10
   health_checks         = [google_compute_region_health_check.default.id]
@@ -22,10 +22,10 @@ resource "google_compute_region_backend_service" "backend" {
 #Create a health check for the backend service
 resource "google_compute_region_health_check" "default" {
   name               = "http-health-check"
-  region            = var.region
+  region             = var.region
   check_interval_sec = 5
   timeout_sec        = 5
-  
+
   http_health_check {
     port         = 80
     request_path = "/"
@@ -35,7 +35,7 @@ resource "google_compute_region_health_check" "default" {
 #Create a URL map for the load balancer
 resource "google_compute_url_map" "url-map" {
   name            = "http-lb"
-  default_service = google_compute_backend_service.backend.id
+  default_service = google_compute_region_backend_service.backend.id
 }
 
 #Create a target HTTP proxy for the load balancer

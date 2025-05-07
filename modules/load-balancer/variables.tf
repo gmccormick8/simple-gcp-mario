@@ -1,6 +1,6 @@
 variable "mig_group" {
   description = "Backend Service Managed Instance Group"
-  type = object({ })
+  type        = object({})
 }
 
 variable "region" {

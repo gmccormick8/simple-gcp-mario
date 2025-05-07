@@ -68,7 +68,7 @@ module "compute" {
 
 | Name       | Description                    | Type        | Required |
 | ---------- | ------------------------------ | ----------- | -------- |
-| project_id | The GCP project ID             | string      | yes      |
+| project_id | The GCP project ID            | string      | yes      |
 | instances  | Map of instance configurations | map(object) | yes      |
 
 ### Instance Configuration
@@ -88,8 +88,8 @@ Each instance configuration supports the following attributes:
 
 ## Outputs
 
-| Name                     | Description                          |
-| ------------------------ | ------------------------------------ |
-| instance_templates       | The created instance templates       |
-| zonal_instance_groups    | The created zonal instance groups    |
-| regional_instance_groups | The created regional instance groups |
+| Name                    | Description                            |
+| ---------------------- | -------------------------------------- |
+| instance_templates     | The created instance templates         |
+| zonal_instance_groups  | The created zonal instance groups      |
+| regional_instance_groups| The created regional instance groups   |

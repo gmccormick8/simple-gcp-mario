@@ -8,7 +8,7 @@ variable "instances" {
   type = map(object({
     name_prefix   = string
     machine_type  = string
-    zone          = string
+    zone          = optional(string)
     region        = optional(string)
     target_size   = optional(number, 1)
     instance_type = optional(string, "zonal") # can be "zonal" or "regional"

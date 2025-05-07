@@ -76,7 +76,7 @@ module "compute" {
         email  = google_service_account.compute-engine-sa.email
         scopes = ["cloud-platform"]
       }
-      tags = ["http-server", "lb-web"] 
+      tags = ["http-server", "lb-web"]
     }
   }
 }
