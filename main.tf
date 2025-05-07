@@ -81,6 +81,5 @@ module "compute" {
 # Create a load balancer for the website
 module "load-balancer" {
   source    = "./modules/load-balancer"
-  region    = "us-central1"
   mig_group = module.compute.instance_group.instance_group
 }
