@@ -34,8 +34,9 @@ resource "google_compute_region_health_check" "default" {
 }
 
 #Create a URL map for the load balancer
-resource "google_compute_url_map" "url-map" {
+resource "google_compute_region_url_map" "url-map" {
   name            = "http-lb"
+  region = var.region
   default_service = google_compute_region_backend_service.backend.id
 }
 
@@ -43,7 +44,7 @@ resource "google_compute_url_map" "url-map" {
 resource "google_compute_region_target_http_proxy" "http-proxy" {
   name    = "http-proxy"
   region  = var.region
-  url_map = google_compute_url_map.url-map.id
+  url_map = google_compute_region_url_map.url-map.id
 }
 
 #Create a global forwarding rule
