@@ -41,9 +41,8 @@ resource "google_compute_region_url_map" "url-map" {
 }
 
 #Create a target HTTP proxy for the load balancer
-resource "google_compute_region_target_http_proxy" "http-proxy" {
+resource "google_compute_target_http_proxy" "http-proxy" {
   name    = "http-proxy"
-  region  = var.region
   url_map = google_compute_region_url_map.url-map.id
 }
 
