@@ -9,7 +9,8 @@ variable "instance" {
     name_prefix  = string
     machine_type = string
     region       = string
-    target_size  = optional(number, 1)
+    min_replicas = number
+    max_replicas = number
     boot_disk = object({
       image = string
       type  = optional(string, "pd-standard")

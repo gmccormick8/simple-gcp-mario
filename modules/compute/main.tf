@@ -31,7 +31,9 @@ resource "google_compute_instance_template" "template" {
       apt-get update
       apt-get install -y apache2
       apt-get install -y git
-      git clone https://github.com/anndcodes/mario-game.git /var/www/html/
+      cd /var/www/html/
+      rm -rf *
+      git clone https://github.com/anndcodes/mario-game.git .
       service apache2 restart
     EOF
   }
@@ -47,7 +49,6 @@ resource "google_compute_region_instance_group_manager" "regional" {
   project            = var.project_id
   base_instance_name = var.instance.name_prefix
   region             = var.instance.region
-  target_size        = var.instance.target_size
   distribution_policy_zones = [
     "${var.instance.region}-a",
     "${var.instance.region}-b",
@@ -62,4 +63,19 @@ resource "google_compute_region_instance_group_manager" "regional" {
   version {
     instance_template = google_compute_instance_template.template.id
   }
+}
+
+# Create an auto-scaling policy for the instance group
+resource "google_compute_region_autoscaler" "autoscaler" {
+  name                = "${var.instance.name_prefix}-autoscaler"
+  region              = var.instance.region
+  target              = google_compute_region_instance_group_manager.regional.id
+  autoscaling_policy {
+    min_replicas = var.instance.min_replicas
+    max_replicas = var.instance.max_replicas
+    cpu_utilization {
+      target = 0.8
+    }
+  }
+  
 }
