@@ -1,4 +1,4 @@
-# Simple Mario Game With MIG Backend
+# Simple Mario Game With MIG Backend Project
 
 [![Run Super Linter](https://github.com/gmccormick8/simple-gcp-mario/actions/workflows/super-linter.yml/badge.svg?branch=main)](https://github.com/gmccormick8/simple-gcp-mario/actions/workflows/super-linter.yml)
 
@@ -9,11 +9,14 @@ This project is designed to run from the Google Cloud Shell using a user-friendl
 ## Architecture
 
 - **VPC Network** with custom subnet and firewall rules
-- **Managed Instance Group** with autoscaling (2-5 instances)
+  - VPC Flow Logging enabled with 5-second intervals
+  - Full metadata collection for network analysis
+- **Managed Instance Group** with autoscaling (1-5 instances)
 - **Global HTTP Load Balancer** for traffic distribution
 - **Cloud NAT** for internet egress from private instances
 - **IAP-protected SSH access** to instances
 - **Service Account** with minimal required permissions
+- **Shielded VMs** with secure boot and integrity monitoring
 
 ## Credits
 
@@ -66,7 +69,7 @@ The setup script will:
 
 ## Cleanup
 
-To destroy all resources:
+To destroy all resources (enter "yes" when prompted):
 
 ```bash
 terraform destroy
@@ -79,6 +82,10 @@ terraform destroy
 - Creates VPC network and subnets
 - Configures firewall rules
 - Sets up Cloud NAT and Cloud Router
+- Enables VPC Flow Logging with:
+  - 5-second aggregation intervals
+  - 50% sampling rate
+  - Full metadata collection
 
 ### Compute Module (`./modules/compute`)
 
@@ -99,17 +106,33 @@ terraform destroy
 - IAP-protected SSH access
 - Minimal service account permissions
 - OS Login enabled by default
+- Shielded VM features:
+  - Secure Boot enabled
+  - vTPM enabled
+  - Integrity monitoring enabled
+- VPC Flow Logging for network security monitoring
 
 ## Cost Considerations
 
 This setup uses:
 
-- e2-micro instances (2-5 instances)
+- e2-micro instances (1-5 instances)
+  - ~$6.11/month per instance
 - Standard persistent disks
+  - ~$0.04/GB/month
 - Global load balancer
-- Cloud NAT (pay per use)
+  - ~$18/month for the forwarding rule
+  - ~$0.008/GB processed
+- Cloud NAT
+  - ~$0.045/hour when in use
+- Network egress
+  - $0.085/GB to $0.23/GB depending on region
 
-Estimated monthly cost: $20-50 USD (varies by usage)
+Total estimated monthly cost: $30-100 USD depending on:
+- Number of active instances
+- Amount of traffic processed
+- Data transfer volumes
+- Region selection
 
 ## Contributing
 

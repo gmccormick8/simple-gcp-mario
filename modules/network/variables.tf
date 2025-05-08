@@ -32,7 +32,7 @@ variable "firewall_rules" {
     allow = optional(list(object({
       protocol = string
       ports    = optional(list(string))
-    })), [])
+    })))
   }))
   default = {}
 }

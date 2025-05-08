@@ -63,7 +63,7 @@ module "compute" {
     name_prefix  = "mario"
     machine_type = "e2-micro"
     region       = "us-central1"
-    min_replicas = 2
+    min_replicas = 1
     max_replicas = 5
     boot_disk = {
       image = "debian-cloud/debian-12"
