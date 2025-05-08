@@ -43,8 +43,7 @@ These APIs will be automatically enabled when you run the `setup.sh` script.
 2. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/simple-gcp-vm-db.git
-   cd simple-gcp-vm-db
+   git clone https://github.com/gmccormick8/simple-gcp-mario.git && cd simple-gcp-mario
    ```
 
 3. Run setup script to initialize the project (enter "y" when prompted):
