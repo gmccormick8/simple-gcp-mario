@@ -1,15 +1,20 @@
 # GCP Compute Engine Terraform Module
 
-This module manages Google Compute Engine regional managed instance groups with auto-configured health checks and instance templates.
+This module manages Google Compute Engine regional managed instance groups with autoscaling capabilities, health checks, and instance templates.
+
+## Credits
+
+The web application deployed on instances uses the [Mario Game](https://github.com/anndcodes/mario-game) repository created by [anndcodes](https://github.com/anndcodes).
 
 ## Features
 
 - Creates regional managed instance groups
 - Configurable instance templates
 - Automatic distribution across 3 zones in a region
-- Built-in nginx web server installation
+- Built-in Apache web server with Mario game deployment
 - OS Login enabled by default
 - Configurable service account and network tags
+- Autoscaling based on CPU utilization
 
 ## Usage
 
@@ -24,7 +29,8 @@ module "compute" {
     name_prefix  = "web"
     machine_type = "e2-micro"
     region       = "us-central1"
-    target_size  = 3
+    min_replicas = 1
+    max_replicas = 5
     boot_disk = {
       image = "debian-cloud/debian-12"
     }
@@ -62,7 +68,8 @@ instance = {
   name_prefix   = string               # Required: Prefix for instance names
   machine_type  = string               # Required: Machine type (e.g., "e2-micro")
   region        = string               # Required: Region for deployment
-  target_size   = number               # Optional: Number of instances (default: 1)
+  min_replicas  = number               # Required: Minimum number of instances
+  max_replicas  = number               # Required: Maximum number of instances
   boot_disk = {
     image       = string               # Required: Boot disk image
     type        = string               # Optional: Disk type (default: "pd-standard")
@@ -90,6 +97,7 @@ instance = {
 ## Notes
 
 - Instances are automatically distributed across three zones in the specified region
-- Each instance runs nginx web server (installed via startup script)
+- Each instance runs Apache web server with a Mario game deployment
 - OS Login is enabled by default
 - The module creates instance templates with a unique name prefix to support updates
+- Autoscaling is configured to maintain CPU utilization around 80%

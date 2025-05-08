@@ -26,6 +26,7 @@ resource "google_compute_instance_template" "template" {
 
   metadata = {
     enable-oslogin = "TRUE"
+    # Many thanks to anndcodes for this Mario game repo (https://github.com/anndcodes/mario-game.git)
     startup-script = <<-EOF
       #! /bin/bash
       apt-get update

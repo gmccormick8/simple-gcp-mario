@@ -9,17 +9,26 @@ This module creates a Google Cloud Platform VPC network with associated resource
 - Configures Cloud NAT and Cloud Router for internet egress
 - Flexible firewall rule management
 - Supports global or regional routing modes
+- Automatic Cloud Router and NAT gateway creation
+
+## Requirements
+
+- Terraform >= 1.11.0
+- Google Provider >= 6.30.0
+- Google Project with the following APIs enabled:
+  - compute.googleapis.com
+  - servicenetworking.googleapis.com
 
 ## Usage
 
-Basic usage with a single subnet:
+### Basic Example
 
 ```hcl
 module "network" {
   source       = "./modules/network"
   project_id   = "my-project"
   network_name = "my-vpc"
-  
+
   subnets = {
     "subnet-1" = {
       region = "us-central1"
@@ -29,7 +38,7 @@ module "network" {
 }
 ```
 
-Advanced usage with multiple subnets, firewall rules, and Cloud NAT:
+### Complete Example
 
 ```hcl
 module "network" {
@@ -37,7 +46,8 @@ module "network" {
   project_id   = "my-project"
   network_name = "my-vpc"
   routing_mode = "REGIONAL"
-  
+
+  # Multiple subnet configuration
   subnets = {
     "subnet-us-central" = {
       region = "us-central1"
@@ -48,14 +58,28 @@ module "network" {
       cidr   = "10.0.2.0/24"
     }
   }
-  
+
+  # Comprehensive firewall rules
   firewall_rules = {
     "allow-internal" = {
       direction     = "INGRESS"
+      priority      = 1000
       source_ranges = ["10.0.0.0/8"]
       allow = [{
         protocol = "tcp"
         ports    = ["0-65535"]
+      }, {
+        protocol = "udp"
+        ports    = ["0-65535"]
+      }]
+    }
+    "allow-ssh" = {
+      direction     = "INGRESS"
+      source_ranges = ["35.235.240.0/20"]  # IAP range
+      target_tags   = ["ssh"]
+      allow = [{
+        protocol = "tcp"
+        ports    = ["22"]
       }]
     }
     "allow-health-checks" = {
@@ -67,71 +91,69 @@ module "network" {
       }]
     }
   }
-  
+
+  # Enable Cloud NAT in multiple regions
   cloud_nat_configs = ["us-central1", "us-east1"]
 }
 ```
 
-## Requirements
+## Module Configuration
 
-- Terraform >= 1.0
-- Google Provider >= 4.0
-- Google Project with necessary APIs enabled
-  - compute.googleapis.com
-  - servicenetworking.googleapis.com
+### Required Variables
 
-## Inputs
+- `project_id` - Your GCP project ID
+- `network_name` - Name for the VPC network
+- `subnets` - At least one subnet configuration
 
-| Name | Description | Type | Required | Default |
-|------|-------------|------|----------|---------|
-| project_id | The GCP project ID | string | yes | - |
-| network_name | The name of the network | string | yes | - |
-| routing_mode | The network routing mode (GLOBAL or REGIONAL) | string | no | "GLOBAL" |
-| subnets | Map of subnet configurations | map(object) | no | {} |
-| firewall_rules | Map of firewall rules | map(object) | no | {} |
-| cloud_nat_configs | Regions where Cloud NAT should be configured | set(string) | no | [] |
+### Optional Variables
+
+- `routing_mode` - Network routing mode ("GLOBAL" or "REGIONAL", defaults to "GLOBAL")
+- `firewall_rules` - Map of firewall rule configurations
+- `cloud_nat_configs` - Set of regions where Cloud NAT should be enabled
 
 ### Subnet Configuration
 
-The `subnets` variable expects a map of objects with the following structure:
+Each subnet requires:
 
 ```hcl
-subnets = {
-  "subnet-name" = {
-    region = string
-    cidr   = string
-  }
+{
+  region = string       # GCP region for the subnet
+  cidr   = string       # CIDR range for the subnet
 }
 ```
 
 ### Firewall Rule Configuration
 
-The `firewall_rules` variable expects a map of objects with the following structure:
+Each firewall rule supports:
 
 ```hcl
-firewall_rules = {
-  "rule-name" = {
-    direction     = string
-    priority      = number (optional)
-    source_ranges = list(string) (optional)
-    target_tags   = list(string) (optional)
-    allow = list(object({
-      protocol = string
-      ports    = list(string) (optional)
-    }))
-  }
+{
+  direction     = string           # "INGRESS" or "EGRESS"
+  priority      = number          # Optional, defaults to 1000
+  source_ranges = list(string)    # Optional, source IP ranges
+  target_tags   = list(string)    # Optional, instance tags
+  allow = list(object({
+    protocol = string           # "tcp", "udp", "icmp"
+    ports    = list(string)    # Optional, port numbers
+  }))
 }
 ```
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| network | The created network resource |
-| network_id | The ID of the VPC |
-| network_self_link | The URI of the VPC |
-| subnets | Map of created subnet resources |
-| subnet_ids | Map of subnet IDs |
+| Name              | Description                                     |
+| ----------------- | ----------------------------------------------- |
+| network           | The complete network resource                   |
+| network_id        | The unique identifier for the VPC               |
+| network_self_link | The URI of the VPC                              |
+| subnets           | Map of all created subnet resources             |
+| subnet_ids        | Map of subnet names to their unique identifiers |
+
+## Notes
+
+- All subnets are created with Private Google Access enabled by default
+- Cloud NAT is configured with automatic IP allocation
+- Firewall rules support both tagged and untagged instances
 
 ## License
 

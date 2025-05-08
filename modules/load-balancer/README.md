@@ -1,14 +1,14 @@
 # GCP HTTP Load Balancer Terraform Module
 
-This module creates a Google Cloud Platform HTTP Load Balancer with regional backend services.
+This module creates a Google Cloud Platform Global HTTP Load Balancer with external managed backend services.
 
 ## Features
 
-- Creates an external HTTP load balancer
-- Configures regional backend services
-- Sets up health checks
-- Provisions static IP address
-- Establishes forwarding rules
+- Creates an external global HTTP load balancer
+- Configures managed backend services
+- Sets up HTTP health checks
+- Provisions static external IP address
+- Establishes global forwarding rules
 
 ## Usage
 
@@ -17,8 +17,7 @@ Basic usage example:
 ```hcl
 module "load-balancer" {
   source    = "./modules/load-balancer"
-  region    = "us-central1"
-  mig_group = module.compute.regional_instance_groups["app"]
+  mig_group = module.compute.instance_group_url
 }
 ```
 
@@ -30,10 +29,9 @@ module "load-balancer" {
 
 ## Inputs
 
-| Name      | Description                            | Type   | Required |
-| --------- | -------------------------------------- | ------ | -------- |
-| region    | Region for the load balancer           | string | yes      |
-| mig_group | Backend Service Managed Instance Group | object | yes      |
+| Name      | Description                               | Type   | Required |
+| --------- | ----------------------------------------- | ------ | -------- |
+| mig_group | URL of the managed instance group backend | string | yes      |
 
 ## Outputs
 
@@ -43,15 +41,25 @@ module "load-balancer" {
 
 ## Resources Created
 
-- Static IP Address
-- Regional Backend Service
-- Health Check
-- URL Map
-- Target HTTP Proxy
-- Global Forwarding Rule
+- Global external IP address (`google_compute_global_address`)
+- Backend service with health checks (`google_compute_backend_service`)
+- HTTP health check (`google_compute_health_check`)
+- URL map (`google_compute_url_map`)
+- Target HTTP proxy (`google_compute_target_http_proxy`)
+- Global forwarding rule (`google_compute_global_forwarding_rule`)
 
-## Notes
+## Load Balancer Configuration
 
-- The module configures HTTP (port 80) load balancing
-- Health checks are performed every 5 seconds
-- Backend timeout is set to 10 seconds
+- Uses global HTTP load balancing (not regional)
+- Health checks:
+  - HTTP on port 80
+  - 5 second check interval
+  - 5 second timeout
+- Backend service:
+  - HTTP protocol
+  - 10 second timeout
+  - UTILIZATION balancing mode
+  - 100% capacity (capacity_scaler = 1.0)
+- Frontend:
+  - HTTP on port 80
+  - External managed load balancing scheme
