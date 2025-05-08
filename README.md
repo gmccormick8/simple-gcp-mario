@@ -1,10 +1,12 @@
-# Simple GCP VM with Load Balancer
+# Simple Mario Game With MIG Backend
 
-This project deploys a scalable web application infrastructure on Google Cloud Platform using Terraform. It creates a VPC network, managed instance group running a Mario game web app, and a global HTTP load balancer.
+This project deploys a scalable web application using Infrastructure as Code (IaC) on Google Cloud Platform using Terraform. 
+It creates a VPC network, Managed Instance Group (MIG) running a lightwieght Mario game web app, and a global HTTP load balancer. 
+This project is designed to run from the Google Cloud Shell using a user-friendly startup script. Simply clone this repository, run the script (following the prompts), and let Terraform do the rest!
 
 ## Architecture
 
-- **VPC Network** with custom subnets and firewall rules
+- **VPC Network** with custom subnet and firewall rules
 - **Managed Instance Group** with autoscaling (2-5 instances)
 - **Global HTTP Load Balancer** for traffic distribution
 - **Cloud NAT** for internet egress from private instances
@@ -18,9 +20,10 @@ This project uses the [Mario Game](https://github.com/anndcodes/mario-game) repo
 ## Prerequisites
 
 1. Google Cloud Platform account
-2. [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed
-3. [Terraform](https://www.terraform.io/downloads.html) >= 1.11.0 installed
+2. [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed - Preinstalled in Google Cloud Shell
+3. [Terraform](https://www.terraform.io/downloads.html) >= 1.11.0 installed - Terraform is preinstalled in Google Cloud Shell. 
 4. Active GCP project with billing enabled
+5. It is recommended to run this project from the [Google Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell)
 
 ## Required GCP APIs
 
@@ -44,16 +47,27 @@ These APIs will be automatically enabled when you run the `setup.sh` script.
    cd simple-gcp-vm-db
    ```
 
-3. Run the setup script:
+3. Run setup script to initialize the project (enter "y" when prompted):
 
    ```bash
    bash setup.sh
    ```
 
-4. After deployment, access the Mario game using the displayed URL:
-   ```bash
-   terraform output website_url
-   ```
+The setup script will:
+
+- Verify and update Terraform if needed
+- Enable required Google Cloud APIs
+- Initialize Terraform
+- Create and apply the Terraform configuration
+- Display a link to the newly created website at the end of the output. Please note that it may take several minutes for the website to go live.
+
+## Cleanup
+
+To destroy all resources:
+
+```bash
+terraform destroy
+```
 
 ## Module Structure
 
@@ -93,14 +107,6 @@ This setup uses:
 - Cloud NAT (pay per use)
 
 Estimated monthly cost: $20-50 USD (varies by usage)
-
-## Cleanup
-
-To destroy all resources:
-
-```bash
-terraform destroy
-```
 
 ## Contributing
 

@@ -68,9 +68,9 @@ resource "google_compute_region_instance_group_manager" "regional" {
 
 # Create an auto-scaling policy for the instance group
 resource "google_compute_region_autoscaler" "autoscaler" {
-  name                = "${var.instance.name_prefix}-autoscaler"
-  region              = var.instance.region
-  target              = google_compute_region_instance_group_manager.regional.id
+  name   = "${var.instance.name_prefix}-autoscaler"
+  region = var.instance.region
+  target = google_compute_region_instance_group_manager.regional.id
   autoscaling_policy {
     min_replicas = var.instance.min_replicas
     max_replicas = var.instance.max_replicas
@@ -78,5 +78,5 @@ resource "google_compute_region_autoscaler" "autoscaler" {
       target = 0.8
     }
   }
-  
+
 }
