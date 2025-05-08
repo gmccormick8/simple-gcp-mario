@@ -13,26 +13,47 @@ variable "instance" {
     max_replicas = number
     boot_disk = object({
       image = string
-      type  = optional(string)
-      size  = optional(number)
+      type  = string
+      size  = number
     })
     network_interface = object({
       subnetwork = string
-      network_ip = optional(string)
+      network_ip = string
     })
-    service_account = optional(object({
-      email  = optional(string)
-      scopes = optional(list(string))
-    }))
-    tags = optional(list(string))
+    service_account = object({
+      email  = string
+      scopes = list(string)
+    })
+    tags = list(string)
   })
 
+  validation {
+    condition     = var.instance.min_replicas > 0
+    error_message = "min_replicas must be greater than 0"
+  }
+
+  validation {
+    condition     = var.instance.max_replicas >= var.instance.min_replicas
+    error_message = "max_replicas must be greater than or equal to min_replicas"
+  }
+
   default = {
+    name_prefix  = null # Required - must be provided
+    machine_type = null # Required - must be provided
+    region       = null # Required - must be provided
+    min_replicas = null # Required - must be provided
+    max_replicas = null # Required - must be provided
     boot_disk = {
+      image = null # Required - must be provided
       type  = "pd-standard"
       size  = 50
     }
+    network_interface = {
+      subnetwork = null # Required - must be provided
+      network_ip = null
+    }
     service_account = {
+      email  = null
       scopes = ["cloud-platform"]
     }
     tags = []
