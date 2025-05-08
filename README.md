@@ -1,4 +1,4 @@
-# Simple Mario Game With MIG Backend Project
+# Simple Mario Game With Compute Engine MIG Backend Project
 
 [![Run Super Linter](https://github.com/gmccormick8/simple-gcp-mario/actions/workflows/super-linter.yml/badge.svg?branch=main)](https://github.com/gmccormick8/simple-gcp-mario/actions/workflows/super-linter.yml)
 

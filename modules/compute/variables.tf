@@ -22,7 +22,7 @@ variable "instance" {
     })
     service_account = optional(object({
       email  = optional(string)
-      scopes = optional(list(string), ["cloud-platform"])
+      scopes = optional(list(string), ["default"])
     }))
     tags = optional(list(string), [])
   })
