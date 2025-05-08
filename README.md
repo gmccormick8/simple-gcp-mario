@@ -1,7 +1,9 @@
 # Simple Mario Game With MIG Backend
 
-This project deploys a scalable web application using Infrastructure as Code (IaC) on Google Cloud Platform using Terraform. 
-It creates a VPC network, Managed Instance Group (MIG) running a lightwieght Mario game web app, and a global HTTP load balancer. 
+[![Run Super Linter](https://github.com/gmccormick8/simple-gcp-mario/actions/workflows/super-linter.yml/badge.svg?branch=main)](https://github.com/gmccormick8/simple-gcp-mario/actions/workflows/super-linter.yml)
+
+This project deploys a scalable web application using Infrastructure as Code (IaC) on Google Cloud Platform using Terraform.
+It creates a VPC network, Managed Instance Group (MIG) running a lightwieght Mario game web app, and a global HTTP load balancer.
 This project is designed to run from the Google Cloud Shell using a user-friendly startup script. Simply clone this repository, run the script (following the prompts), and let Terraform do the rest!
 
 ## Architecture
@@ -21,7 +23,7 @@ This project uses the [Mario Game](https://github.com/anndcodes/mario-game) repo
 
 1. Google Cloud Platform account
 2. [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed - Preinstalled in Google Cloud Shell
-3. [Terraform](https://www.terraform.io/downloads.html) >= 1.11.0 installed - Terraform is preinstalled in Google Cloud Shell. 
+3. [Terraform](https://www.terraform.io/downloads.html) >= 1.11.0 installed - Terraform is preinstalled in Google Cloud Shell.
 4. Active GCP project with billing enabled
 5. It is recommended to run this project from the [Google Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell)
 
@@ -58,7 +60,9 @@ The setup script will:
 - Enable required Google Cloud APIs
 - Initialize Terraform
 - Create and apply the Terraform configuration
+<!-- textlint-disable -->
 - Display a link to the newly created website at the end of the output. Please note that it may take several minutes for the website to go live.
+<!-- textlint-enable -->
 
 ## Cleanup
 

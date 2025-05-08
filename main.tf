@@ -72,7 +72,7 @@ module "compute" {
       subnetwork = module.network.subnets["prod-central-vpc"].self_link
     }
     service_account = {
-      email  = "${google_service_account.compute-engine-sa.email}"
+      email  = google_service_account.compute-engine-sa.email
       scopes = ["cloud-platform"]
     }
     tags = ["http-server"]

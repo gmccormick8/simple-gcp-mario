@@ -5,6 +5,12 @@ resource "google_compute_instance_template" "template" {
   machine_type = var.instance.machine_type
   project      = var.project_id
 
+  shielded_instance_config {
+    enable_secure_boot = true
+    enable_vtpm       = true
+    enable_integrity_monitoring = true
+  }
+
   disk {
     source_image = var.instance.boot_disk.image
     disk_type    = var.instance.boot_disk.type
@@ -25,6 +31,7 @@ resource "google_compute_instance_template" "template" {
   tags = var.instance.tags
 
   metadata = {
+    block-project-ssh-keys = true
     enable-oslogin = "TRUE"
     # Many thanks to anndcodes for this Mario game repo (https://github.com/anndcodes/mario-game.git)
     startup-script = <<-EOF
