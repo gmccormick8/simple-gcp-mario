@@ -13,8 +13,8 @@ variable "instance" {
     max_replicas = number
     boot_disk = object({
       image = string
-      type  = optional(string, "pd-standard")
-      size  = optional(number, 50)
+      type  = optional(string)
+      size  = optional(number)
     })
     network_interface = object({
       subnetwork = string
@@ -22,8 +22,19 @@ variable "instance" {
     })
     service_account = optional(object({
       email  = optional(string)
-      scopes = optional(list(string), ["cloud-platform"])
+      scopes = optional(list(string))
     }))
-    tags = optional(list(string), [])
+    tags = optional(list(string))
   })
+
+  default = {
+    boot_disk = {
+      type  = "pd-standard"
+      size  = 50
+    }
+    service_account = {
+      scopes = ["cloud-platform"]
+    }
+    tags = []
+  }
 }

@@ -18,7 +18,7 @@ The web application deployed on instances uses the [Mario Game](https://github.c
 
 ## Usage
 
-Basic usage example:
+Basic usage example with all required fields:
 
 ```hcl
 module "compute" {
@@ -37,10 +37,37 @@ module "compute" {
     network_interface = {
       subnetwork = "default"
     }
-    service_account = {
-      email = "my-service-account@project.iam.gserviceaccount.com"
+  }
+}
+```
+
+Example with all options:
+
+```hcl
+module "compute" {
+  source     = "./modules/compute"
+  project_id = "my-project"
+
+  instance = {
+    name_prefix  = "web"
+    machine_type = "e2-micro"
+    region       = "us-central1"
+    min_replicas = 1
+    max_replicas = 5
+    boot_disk = {
+      image = "debian-cloud/debian-12"
+      type  = "pd-standard"    # Optional, defaults to pd-standard
+      size  = 50               # Optional, defaults to 50GB
     }
-    tags = ["http-server", "lb-web"]
+    network_interface = {
+      subnetwork = "default"
+      network_ip = "10.0.0.2"  # Optional
+    }
+    service_account = {        # Optional block
+      email  = "my-sa@project.iam.gserviceaccount.com"
+      scopes = ["cloud-platform"]
+    }
+    tags = ["http-server", "lb-web"]  # Optional
   }
 }
 ```
@@ -61,29 +88,33 @@ module "compute" {
 
 ### Instance Configuration
 
-The `instance` variable supports the following attributes:
+Required and optional fields:
 
 ```hcl
 instance = {
-  name_prefix   = string               # Required: Prefix for instance names
-  machine_type  = string               # Required: Machine type (e.g., "e2-micro")
-  region        = string               # Required: Region for deployment
-  min_replicas  = number               # Required: Minimum number of instances
-  max_replicas  = number               # Required: Maximum number of instances
+  # Required fields - no defaults
+  name_prefix  = string          # Prefix for instance names
+  machine_type = string          # Machine type (e.g., "e2-micro")
+  region       = string          # Region for deployment
+  min_replicas = number          # Minimum number of instances
+  max_replicas = number          # Maximum number of instances
   boot_disk = {
-    image       = string               # Required: Boot disk image
-    type        = string               # Optional: Disk type (default: "pd-standard")
-    size        = number               # Optional: Disk size in GB (default: 50)
+    image      = string          # Boot disk image
+    # Optional fields with defaults
+    type       = string          # Optional: Disk type (default: "pd-standard")
+    size       = number          # Optional: Disk size in GB (default: 50)
   }
   network_interface = {
-    subnetwork  = string               # Required: Subnetwork self_link or name
-    network_ip  = string               # Optional: Static internal IP
+    subnetwork = string          # Required: Subnetwork self_link or name
+    network_ip = string          # Optional: Static internal IP
   }
-  service_account = {                  # Optional: Service account configuration
-    email       = string               # Optional: Service account email
-    scopes      = list(string)         # Optional: Access scopes (default: ["cloud-platform"])
+
+  # Optional blocks with defaults
+  service_account = {            # Optional block
+    email  = string             # Optional: Service account email
+    scopes = list(string)       # Optional: Access scopes (default: ["cloud-platform"])
   }
-  tags           = list(string)        # Optional: Network tags (default: [])
+  tags = list(string)           # Optional: Network tags (default: [])
 }
 ```
 

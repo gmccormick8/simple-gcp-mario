@@ -67,6 +67,34 @@ The setup script will:
 - Display a link to the newly created website at the end of the output. Please note that it may take several minutes for the website to go live.
 <!-- textlint-enable -->
 
+## Manual Deployment
+
+If you prefer to deploy manually:
+
+1. Set your Google Cloud project ID:
+
+```bash
+echo 'project_id = "YOUR_PROJECT_ID"' > terraform.tfvars
+```
+
+2. Initialize Terraform:
+
+```bash
+terraform init
+```
+
+3. Review the deployment plan:
+
+```bash
+terraform plan
+```
+
+4. Apply the configuration (enter "yes" when prompted):
+
+```bash
+terraform apply
+```
+
 ## Cleanup
 
 To destroy all resources (enter "yes" when prompted):
@@ -74,6 +102,10 @@ To destroy all resources (enter "yes" when prompted):
 ```bash
 terraform destroy
 ```
+
+## Customization
+
+- The machine type, min/max replicas can be modified in `main.tf`
 
 ## Module Structure
 
@@ -112,6 +144,14 @@ terraform destroy
   - Integrity monitoring enabled
 - VPC Flow Logging for network security monitoring
 
+## Security Notes
+
+This implementation:
+
+- Uses HTTP (not HTTPS)
+- Is intended for development/testing purposes
+- Is not suitable for production use
+
 ## Cost Considerations
 
 This setup uses:
@@ -129,6 +169,7 @@ This setup uses:
   - $0.085/GB to $0.23/GB depending on region
 
 Total estimated monthly cost: $30-100 USD depending on:
+
 - Number of active instances
 - Amount of traffic processed
 - Data transfer volumes
