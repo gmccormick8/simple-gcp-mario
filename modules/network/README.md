@@ -17,7 +17,6 @@ This module creates a Google Cloud Platform VPC network with associated resource
 - Google Provider >= 6.30.0
 - Google Project with the following APIs enabled:
   - compute.googleapis.com
-  - servicenetworking.googleapis.com
 
 ## Usage
 
