@@ -112,7 +112,7 @@ instance = {
   # Optional blocks with defaults
   service_account = {            # Optional block
     email  = string             # Optional: Service account email
-    scopes = list(string)       # Optional: Access scopes (default: ["default"])
+    scopes = list(string)       # Optional: Access scopes (default: ["cloud-platform"])
   }
   tags = list(string)           # Optional: Network tags (default: [])
 }
