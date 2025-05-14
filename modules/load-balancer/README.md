@@ -23,8 +23,8 @@ module "load-balancer" {
 
 ## Requirements
 
-- Terraform >= 1.11.0
-- Google Provider >= 6.30.0
+- Terraform >= 1.11
+- Google Provider >= 6.30
 - A configured managed instance group to serve as backend
 
 ## Inputs
