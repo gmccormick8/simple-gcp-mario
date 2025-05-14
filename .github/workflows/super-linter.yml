@@ -33,7 +33,7 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v7
         env:
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: true
           # Had to disable Terrascan as it does not support Terraform v1.3.0 features  
           # Specifically, it doesn't support optional object type with defaults
           VALIDATE_TERRAFORM_TERRASCAN: false
