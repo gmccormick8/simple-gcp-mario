@@ -13,10 +13,12 @@ This module creates a Google Cloud Platform VPC network with associated resource
 
 ## Requirements
 
-- Terraform >= 1.11
-- Google Provider >= 6.30
+- Terraform ~> 1.11
+- Google Provider ~> 6.30
 - Google Project with the following APIs enabled:
   - compute.googleapis.com
+ 
+The tilde (~>) operator allows only the rightmost version component to increment. For example, `~> 1.11` allows installing versions 1.11.0 up to but not including 1.12.0.
 
 ## Usage
 
