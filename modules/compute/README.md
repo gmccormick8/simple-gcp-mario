@@ -74,10 +74,12 @@ module "compute" {
 
 ## Requirements
 
-- Terraform >= 1.11.0
-- Google Provider >= 6.30.0
+- Terraform ~> 1.11
+- Google Provider ~> 6.30
 - Google Project with necessary APIs enabled
   - compute.googleapis.com
+ 
+The tilde (~>) operator allows only the rightmost version component to increment. For example, `~> 1.11` allows installing versions 1.11.0 up to but not including 1.12.0.
 
 ## Inputs
 
