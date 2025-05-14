@@ -26,9 +26,11 @@ This project uses the [Mario Game](https://github.com/anndcodes/mario-game) repo
 
 1. Google Cloud Platform account
 2. [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed - Preinstalled in Google Cloud Shell
-3. [Terraform](https://www.terraform.io/downloads.html) >= 1.11.0 installed - Terraform is preinstalled in Google Cloud Shell.
+3. [Terraform](https://www.terraform.io/downloads.html) ~> 1.11 installed - Terraform is preinstalled in Google Cloud Shell.
 4. Active GCP project with billing enabled
 5. It is recommended to run this project from the [Google Cloud Shell](https://cloud.google.com/shell/docs/using-cloud-shell)
+
+The tilde (~>) operator allows only the rightmost version component to increment. For example, `~> 1.11` allows installing versions 1.11.0 up to but not including 1.12.0.
 
 ## Required GCP APIs
 
