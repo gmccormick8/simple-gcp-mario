@@ -13,8 +13,8 @@ This module creates a Google Cloud Platform VPC network with associated resource
 
 ## Requirements
 
-- Terraform >= 1.11.0
-- Google Provider >= 6.30.0
+- Terraform >= 1.11
+- Google Provider >= 6.30
 - Google Project with the following APIs enabled:
   - compute.googleapis.com
 
