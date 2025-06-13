@@ -6,6 +6,7 @@
 set -e
 
 echo "Setting up the environment..."
+
 # Check and set PROJECT_ID
 if [ -n "$DEVSHELL_PROJECT_ID" ]; then
   export PROJECT_ID="$DEVSHELL_PROJECT_ID"
